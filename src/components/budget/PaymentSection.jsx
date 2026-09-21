@@ -24,7 +24,7 @@ export default function PaymentSection({
             key={forma}
             type="button"
             onClick={() => onFormaPagamento(forma)}
-            className={`h-14 rounded-full text-[15px] font-bold transition-colors ${
+            className={`h-14 rounded text-[15px] font-bold transition-colors ${
               formaPagamento === forma
                 ? 'bg-primary-container text-on-primary-container'
                 : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'

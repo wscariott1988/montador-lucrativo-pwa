@@ -1,5 +1,5 @@
 import { ArrowDownCircle, ArrowUpCircle, Trash2 } from 'lucide-react';
-import { formatBRL } from '../../utils/formatters';
+import { useAppData } from '../../context/AppDataContext';
 
 function shortDate(iso) {
   const [y, m, d] = String(iso ?? '').split('-');
@@ -7,6 +7,7 @@ function shortDate(iso) {
 }
 
 export default function TransactionsList({ despesas, receitas, onDeleteReceita, onDeleteDespesa }) {
+  const { formatCurrency } = useAppData();
   const items = [
     ...receitas.map((item) => ({
       id: item.id,
@@ -54,7 +55,7 @@ export default function TransactionsList({ despesas, receitas, onDeleteReceita, 
             }`}
           >
             {item.kind === 'receita' ? '+' : '-'}
-            {formatBRL(item.valor)}
+            {formatCurrency(item.valor)}
           </p>
           <button
             type="button"

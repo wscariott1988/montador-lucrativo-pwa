@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { Wrench, Plus, Check, X, Pencil, Trash2 } from 'lucide-react';
+import { Wrench, Plus, Check, X, Pencil, Trash2, AlertTriangle } from 'lucide-react';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import { useAppData } from '../../context/AppDataContext';
-import { computeDepreciacaoMensal, computeCustoMensalFerramentas } from '../../utils/pricing';
-import { formatBRL, parseBRLtoNumber } from '../../utils/formatters';
+import {
+  computeDepreciacaoMensal,
+  computeCustoMensalFerramentas,
+  computePercentualVidaUtil,
+} from '../../utils/pricing';
+import { parseBRLtoNumber } from '../../utils/formatters';
 
 const EMPTY_FORM = { nome: '', valorCompra: '', vidaUtilMeses: '' };
 
@@ -14,7 +18,8 @@ function moneyToDraft(value) {
 }
 
 export default function ToolsManager() {
-  const { tools, online, addTool, updateTool, deleteTool } = useAppData();
+  const { tools, online, addTool, updateTool, deleteTool, formatCurrency, privacidade } =
+    useAppData();
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState('');
@@ -89,17 +94,17 @@ export default function ToolsManager() {
         <div className="flex items-center gap-2">
           <Wrench size={20} className="text-primary-container" />
           <h3 className="text-base font-semibold tracking-wide text-on-surface">
-            Gestão de ferramentas
+            Gerenciar ferramentas
           </h3>
         </div>
-        <span className="rounded-lg bg-surface-container-high px-2.5 py-1 text-xs font-semibold text-primary-container">
+        <span className="rounded bg-surface-container-high px-2.5 py-1 text-xs font-semibold text-primary-container">
           {tools.length} {tools.length === 1 ? 'item' : 'itens'}
         </span>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-3 rounded-xl border border-zinc-border bg-surface-container p-4"
+        className="flex flex-col gap-3 rounded border border-zinc-border bg-surface-container p-3"
       >
         <Input
           label="Nome da ferramenta"
@@ -112,12 +117,13 @@ export default function ToolsManager() {
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <Input
-              label="Valor (R$)"
+              label="Valor de compra (R$)"
               prefix="R$"
               inputMode="decimal"
-              placeholder="0,00"
-              value={form.valorCompra}
+              placeholder={privacidade ? 'R$ ***' : '0,00'}
+              value={privacidade ? '' : form.valorCompra}
               onChange={(event) => setField('valorCompra', event.target.value)}
+              disabled={privacidade}
             />
           </div>
           <div className="w-24 shrink-0">
@@ -169,81 +175,121 @@ export default function ToolsManager() {
         ) : null}
       </form>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {tools.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-border bg-surface-container/40 px-6 py-8 text-center">
+          <div className="flex flex-col items-center justify-center gap-2 rounded border border-dashed border-zinc-border bg-surface-container/40 px-6 py-8 text-center">
             <Wrench size={26} className="text-on-surface-variant" />
             <p className="text-[15px] font-normal text-on-surface-variant">
               Nenhuma ferramenta cadastrada ainda. Adicione a primeira acima.
             </p>
           </div>
         ) : (
-          tools.map((tool) => (
-            <div
-              key={tool.id}
-              className="flex flex-col gap-3 rounded-xl border border-zinc-border bg-surface-container p-4"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-container-highest text-primary-container">
-                    <Wrench size={20} />
+          tools.map((tool) => {
+            const percentual = computePercentualVidaUtil(tool);
+            const esgotada = percentual >= 100;
+            const resta = Math.max(0, 100 - percentual);
+            return (
+              <div
+                key={tool.id}
+                className={`flex flex-col gap-3 rounded border bg-surface-container p-3 ${
+                  esgotada ? 'border-error/60' : 'border-zinc-border'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded bg-surface-container-highest ${
+                        esgotada ? 'text-error' : 'text-primary-container'
+                      }`}
+                    >
+                      <Wrench size={20} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-[15px] font-semibold text-on-surface">
+                        {tool.nome}
+                      </p>
+                      <p className="mt-0.5 text-[15px] font-normal text-on-surface-variant">
+                        Compra:{' '}
+                        <span className="font-mono font-bold text-on-surface">
+                          {formatCurrency(tool.valorCompra)}
+                        </span>{' '}
+                        • {tool.vidaUtilMeses} meses
+                      </p>
+                      {esgotada ? (
+                        <p className="mt-1 flex items-center gap-1 text-[13px] font-bold text-error">
+                          <AlertTriangle size={14} className="shrink-0" />
+                          Vida útil esgotada — reavalie esta ferramenta
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-[15px] font-semibold text-on-surface">
-                      {tool.nome}
-                    </p>
-                    <p className="mt-0.5 text-[15px] font-normal text-on-surface-variant">
-                      Compra:{' '}
-                      <span className="font-mono font-bold text-on-surface">
-                        {formatBRL(tool.valorCompra)}
-                      </span>{' '}
-                      • {tool.vidaUtilMeses} meses
-                    </p>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      aria-label={`Editar ${tool.nome}`}
+                      onClick={() => startEdit(tool)}
+                      className="flex h-10 w-10 items-center justify-center rounded bg-surface-container-high text-on-surface-variant transition-colors hover:text-on-surface"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Remover ${tool.nome}`}
+                      onClick={() => confirmDelete(tool)}
+                      className="flex h-10 w-10 items-center justify-center rounded bg-error-container/50 text-error transition-colors hover:bg-error/20"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <button
-                    type="button"
-                    aria-label={`Editar ${tool.nome}`}
-                    onClick={() => startEdit(tool)}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-container-high text-on-surface-variant transition-colors hover:text-on-surface"
-                  >
-                    <Pencil size={18} />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Remover ${tool.nome}`}
-                    onClick={() => confirmDelete(tool)}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-error-container/50 text-error transition-colors hover:bg-error/20"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+
+                {percentual > 0 ? (
+                  <div className="flex flex-col gap-1">
+                    <div className="h-1.5 w-full overflow-hidden rounded bg-surface-container-highest">
+                      <div
+                        className={`h-full rounded transition-all ${
+                          esgotada ? 'bg-error' : 'bg-primary-container'
+                        }`}
+                        style={{ width: `${Math.min(100, percentual)}%` }}
+                      />
+                    </div>
+                    <span
+                      className={`text-[13px] font-semibold ${
+                        esgotada ? 'text-error' : 'text-on-surface-variant'
+                      }`}
+                    >
+                      {esgotada
+                        ? 'Vida útil consumida ≥ 100%'
+                        : `${resta}% de vida útil restante`}
+                    </span>
+                  </div>
+                ) : null}
+
+                <div className="flex items-center justify-between rounded bg-surface-container-low px-3 py-2">
+                  <span className="text-[15px] font-normal text-on-surface-variant">
+                    Depreciação mensal (Valor / Meses)
+                  </span>
+                  <span className="font-mono text-[15px] font-bold text-primary-container">
+                    {formatCurrency(
+                      tool.depreciacaoMensal != null
+                        ? tool.depreciacaoMensal
+                        : computeDepreciacaoMensal(tool.valorCompra, tool.vidaUtilMeses)
+                    )}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center justify-between rounded-lg bg-surface-container-low px-3 py-2">
-                <span className="text-[15px] font-normal text-on-surface-variant">
-                  Depreciação mensal
-                </span>
-                <span className="font-mono text-[15px] font-bold text-primary-container">
-                  {formatBRL(
-                    tool.depreciacaoMensal != null
-                      ? tool.depreciacaoMensal
-                      : computeDepreciacaoMensal(tool.valorCompra, tool.vidaUtilMeses)
-                  )}
-                </span>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
       {tools.length > 0 ? (
-        <div className="flex items-center justify-between rounded-xl bg-surface-container-high px-4 py-3">
+        <div className="flex items-center justify-between rounded bg-surface-container-high px-4 py-3">
           <span className="text-[15px] font-semibold text-on-surface-variant">
             Depreciação total / mês
           </span>
           <span className="font-mono text-[15px] font-bold text-tertiary">
-            {formatBRL(totalDepreciacao)}
+            {formatCurrency(totalDepreciacao)}
           </span>
         </div>
       ) : null}

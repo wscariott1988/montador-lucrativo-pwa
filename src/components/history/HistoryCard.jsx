@@ -1,7 +1,8 @@
 import { CheckCircle2, RotateCcw, Navigation, FileText, Trash2, Loader2 } from 'lucide-react';
-import { formatBRL, formatDateTimeBR, formatDateBR } from '../../utils/formatters';
+import { formatDateTimeBR, formatDateBR } from '../../utils/formatters';
 import { buildSnapshotFromDoc, buildEnderecoCompleto } from '../../services/historyService';
 import { generateBudgetPdf } from '../../services/pdfService';
+import { useAppData } from '../../context/AppDataContext';
 
 const STATUS_META = {
   pendente: {
@@ -15,6 +16,7 @@ const STATUS_META = {
 };
 
 export default function HistoryCard({ orcamento, clientes, blocked, onToggleStatus, onDelete }) {
+  const { formatCurrency } = useAppData();
   const meta = STATUS_META[orcamento.status] || STATUS_META.pendente;
   const endereco = buildEnderecoCompleto(orcamento, clientes);
   const temEndereco = endereco.trim().length > 0;
@@ -68,7 +70,7 @@ export default function HistoryCard({ orcamento, clientes, blocked, onToggleStat
           ) : null}
         </div>
         <p className="shrink-0 font-mono text-3xl font-extrabold tracking-tight text-on-surface">
-          {formatBRL(orcamento.totalGeral)}
+          {formatCurrency(orcamento.totalGeral)}
         </p>
       </div>
 

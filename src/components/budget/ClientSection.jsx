@@ -1,6 +1,7 @@
 import { Search, MapPin, CalendarDays, Truck, UserSearch } from 'lucide-react';
 import Input from '../ui/Input';
 import { toISODate } from '../../utils/formatters';
+import { useAppData } from '../../context/AppDataContext';
 
 export default function ClientSection({
   clients,
@@ -17,6 +18,7 @@ export default function ClientSection({
   deslocamento,
   onDeslocamento,
 }) {
+  const { privacidade } = useAppData();
   const termo = clienteBusca.trim().toLowerCase();
   const sugestoes = termo
     ? clients
@@ -108,10 +110,11 @@ export default function ClientSection({
         label="Deslocamento (R$)"
         prefix="R$"
         inputMode="decimal"
-        placeholder="0,00"
+        placeholder={privacidade ? 'R$ ***' : '0,00'}
         icon={Truck}
-        value={deslocamento}
+        value={privacidade ? '' : deslocamento}
         onChange={(event) => onDeslocamento(event.target.value)}
+        disabled={privacidade}
       />
     </section>
   );

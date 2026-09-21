@@ -19,7 +19,7 @@ export default function SubscriptionBanner({ dataVencimento }) {
   );
 
   return (
-    <div className="fixed inset-x-0 top-16 z-40 border-b border-error/30 bg-error-container/95 px-4 py-3 backdrop-blur-xl">
+    <div className="fixed inset-x-0 top-[6.75rem] z-30 border-b border-error/30 bg-error-container/95 px-4 py-3 backdrop-blur-xl">
       <div className="flex items-start gap-2.5">
         <AlertTriangle size={20} className="mt-0.5 shrink-0 text-error" />
         <p className="min-w-0 flex-1 text-[15px] leading-snug text-on-surface">

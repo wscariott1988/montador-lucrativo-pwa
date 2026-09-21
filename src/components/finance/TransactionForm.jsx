@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { ArrowDownCircle, ArrowUpCircle, Minus, Plus } from 'lucide-react';
 import Input from '../ui/Input';
 import { parseBRLtoNumber, toISODate } from '../../utils/formatters';
+import { useAppData } from '../../context/AppDataContext';
 
 export default function TransactionForm({ tipo, onSubmit }) {
+  const { privacidade } = useAppData();
   const isSaida = tipo === 'saida';
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState('');
@@ -55,9 +57,10 @@ export default function TransactionForm({ tipo, onSubmit }) {
             label="Valor (R$)"
             prefix="R$"
             inputMode="decimal"
-            placeholder="0,00"
-            value={valor}
+            placeholder={privacidade ? 'R$ ***' : '0,00'}
+            value={privacidade ? '' : valor}
             onChange={(event) => setValor(event.target.value)}
+            disabled={privacidade}
           />
         </div>
         <button

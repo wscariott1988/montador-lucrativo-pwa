@@ -5,7 +5,8 @@ import {
   extractMissingIndexUrl,
 } from '../services/opportunitiesService';
 import { ADMIN_WHATSAPP } from '../config/admin';
-import { formatBRL, formatRelativeTime } from '../utils/formatters';
+import { formatRelativeTime } from '../utils/formatters';
+import { useAppData } from '../context/AppDataContext';
 
 function RadarSkeleton({ count = 4 }) {
   return (
@@ -28,6 +29,7 @@ function RadarSkeleton({ count = 4 }) {
 const BETA_BADGE = 'bg-primary-container text-black';
 
 export default function RadarView() {
+  const { formatCurrency } = useAppData();
   const [vagas, setVagas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [indexError, setIndexError] = useState(null);
@@ -159,7 +161,7 @@ export default function RadarView() {
                   Valor estimado
                 </span>
                 <span className="font-mono text-2xl font-extrabold tracking-tight text-primary-container">
-                  {formatBRL(vaga.valorEstimado)}
+                  {formatCurrency(vaga.valorEstimado)}
                 </span>
               </div>
 

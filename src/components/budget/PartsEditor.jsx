@@ -3,9 +3,10 @@ import { Wrench, Plus, Trash2, Boxes } from 'lucide-react';
 import Input from '../ui/Input';
 import { uid, num, money } from '../../services/budgetService';
 import { COMMON_PARTS } from '../../data/budgetPresets';
-import { formatBRL } from '../../utils/formatters';
+import { useAppData } from '../../context/AppDataContext';
 
 export default function PartsEditor({ pecas, onChangePecas, onNotify }) {
+  const { formatCurrency, privacidade } = useAppData();
   const [selected, setSelected] = useState('');
   const [quantidade, setQuantidade] = useState('1');
   const [unitario, setUnitario] = useState('');
@@ -74,9 +75,10 @@ export default function PartsEditor({ pecas, onChangePecas, onNotify }) {
             label="R$ Unitário"
             prefix="R$"
             inputMode="decimal"
-            placeholder="0,00"
-            value={unitario}
+            placeholder={privacidade ? 'R$ ***' : '0,00'}
+            value={privacidade ? '' : unitario}
             onChange={(event) => setUnitario(event.target.value)}
+            disabled={privacidade}
           />
         </div>
         <button
@@ -99,11 +101,11 @@ export default function PartsEditor({ pecas, onChangePecas, onNotify }) {
             <div className="min-w-0 flex-1">
               <p className="truncate text-[15px] font-semibold text-on-surface">{item.nome}</p>
               <p className="text-[15px] text-on-surface-variant">
-                {formatBRL(num(item.valorVendaUnitario))} × {item.quantidade}
+                {formatCurrency(num(item.valorVendaUnitario))} × {item.quantidade}
               </p>
             </div>
             <span className="shrink-0 font-mono text-[15px] font-bold text-primary-container">
-              {formatBRL(itemSubtotal(item))}
+              {formatCurrency(itemSubtotal(item))}
             </span>
             <button
               type="button"
@@ -125,7 +127,7 @@ export default function PartsEditor({ pecas, onChangePecas, onNotify }) {
         <div className="flex items-center justify-between rounded-xl bg-surface-container-high px-4 py-3">
           <span className="text-[15px] font-semibold text-on-surface-variant">Subtotal peças</span>
           <span className="font-mono text-[15px] font-bold text-primary-container">
-            {formatBRL(totalPecas)}
+            {formatCurrency(totalPecas)}
           </span>
         </div>
       ) : null}

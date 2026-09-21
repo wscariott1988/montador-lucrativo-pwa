@@ -14,6 +14,7 @@ import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { computeDepreciacaoMensal } from '../utils/pricing';
+import { formatBRL } from '../utils/formatters';
 import { addClient, updateClient, deleteClient } from '../services/clientService';
 
 const CACHE_KEYS = {
@@ -21,6 +22,16 @@ const CACHE_KEYS = {
   tools: 'ml_cache_tools',
   clients: 'ml_cache_clients',
 };
+
+const PRIVACY_KEY = 'ml_modo_privacidade';
+
+function loadPrivacy() {
+  try {
+    return window.localStorage.getItem(PRIVACY_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 function loadCache(key, fallback) {
   try {
@@ -53,6 +64,8 @@ export function AppDataProvider({ children }) {
   const [tools, setTools] = useState(() => (uid ? loadCache(CACHE_KEYS.tools, []) : []));
   const [clients, setClients] = useState(() => (uid ? loadCache(CACHE_KEYS.clients, []) : []));
   const [loading, setLoading] = useState(uid != null);
+  // Modo privacidade PERMANENTE: persiste ao fechar/reabrir o app (localStorage).
+  const [privacidade, setPrivacidade] = useState(loadPrivacy);
 
   useEffect(() => {
     if (!uid) {
@@ -188,6 +201,25 @@ export function AppDataProvider({ children }) {
 
   const valorHoraCalculado = Number(profile?.valorHoraCalculado ?? 0) || 0;
 
+  const togglePrivacidade = useCallback(() => {
+    setPrivacidade((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(PRIVACY_KEY, next ? '1' : '0');
+      } catch {
+        // Storage indisponivel: segue so em memoria
+      }
+      return next;
+    });
+  }, []);
+
+  // Todos os valores financeiros do app passam por aqui: quando o modo
+  // privacidade esta ativo, qualquer montante vira "R$ ***" na interface.
+  const formatCurrency = useCallback(
+    (value) => (privacidade ? 'R$ ***' : formatBRL(value)),
+    [privacidade]
+  );
+
   const value = {
     profile,
     tools,
@@ -195,6 +227,9 @@ export function AppDataProvider({ children }) {
     loading,
     online,
     valorHoraCalculado,
+    privacidade,
+    togglePrivacidade,
+    formatCurrency,
     updateProfile,
     addTool,
     updateTool,

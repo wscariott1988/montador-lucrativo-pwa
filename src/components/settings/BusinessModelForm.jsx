@@ -37,7 +37,7 @@ function createDraft(profile) {
 }
 
 export default function BusinessModelForm() {
-  const { profile, online, updateProfile } = useAppData();
+  const { profile, online, updateProfile, privacidade } = useAppData();
   const [draft, setDraft] = useState(() => createDraft(profile));
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -154,19 +154,21 @@ export default function BusinessModelForm() {
             label="Valor do DAS (R$/mês)"
             prefix="R$"
             inputMode="decimal"
-            placeholder="0,00"
+            placeholder={privacidade ? 'R$ ***' : '0,00'}
             icon={Coins}
-            value={draft.valorDas}
+            value={privacidade ? '' : draft.valorDas}
             onChange={(event) => setField('valorDas', event.target.value)}
+            disabled={privacidade}
           />
         ) : (
           <Input
             label="Imposto (%)"
             inputMode="decimal"
-            placeholder="0"
+            placeholder={privacidade ? '**' : '0'}
             icon={Percent}
-            value={draft.impostoPercentual}
+            value={privacidade ? '' : draft.impostoPercentual}
             onChange={(event) => setField('impostoPercentual', event.target.value)}
+            disabled={privacidade}
           />
         )}
 
@@ -174,29 +176,32 @@ export default function BusinessModelForm() {
           label="Pró-labore (R$/mês)"
           prefix="R$"
           inputMode="decimal"
-          placeholder="0,00"
+          placeholder={privacidade ? 'R$ ***' : '0,00'}
           icon={PiggyBank}
-          value={draft.proLabore}
+          value={privacidade ? '' : draft.proLabore}
           onChange={(event) => setField('proLabore', event.target.value)}
+          disabled={privacidade}
         />
 
         <Input
-          label="Custos fixos (R$/mês)"
+          label="Custos fixos / Despesas fixas (R$/mês)"
           prefix="R$"
           inputMode="decimal"
-          placeholder="0,00"
+          placeholder={privacidade ? 'R$ ***' : '0,00'}
           icon={Coins}
-          value={draft.custosFixos}
+          value={privacidade ? '' : draft.custosFixos}
           onChange={(event) => setField('custosFixos', event.target.value)}
+          disabled={privacidade}
         />
 
         <Input
           label="Margem de lucro (%)"
           inputMode="decimal"
-          placeholder="0"
+          placeholder={privacidade ? '**' : '0'}
           icon={TrendingUp}
-          value={draft.metaLucro}
+          value={privacidade ? '' : draft.metaLucro}
           onChange={(event) => setField('metaLucro', event.target.value)}
+          disabled={privacidade}
         />
 
         <div className="grid grid-cols-2 gap-3">

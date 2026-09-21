@@ -8,6 +8,7 @@ import {
   assinaturaPertoVencer,
 } from '../../utils/subscription';
 import AppHeader from './AppHeader';
+import ValorHoraBadge from './ValorHoraBadge';
 import BottomNav from './BottomNav';
 import SubscriptionBanner from './SubscriptionBanner';
 import SubscriptionLockScreen from './SubscriptionLockScreen';
@@ -40,10 +41,15 @@ export default function AppLayout() {
     return <SubscriptionLockScreen />;
   }
 
+  // Topo fixo = header auto-hide (4rem) + badge Valor da Hora (2.75rem).
+  // Com banner de assinatura, o conteudo e empurrado mais para baixo.
+  const topOffset = pertoVencer ? 'pt-[13rem]' : 'pt-[6.75rem]';
+
   return (
     <div className="flex min-h-screen flex-col bg-zinc-dark">
       <AppHeader subtitle={subtitle} />
-      <main className={`w-full flex-1 px-4 pb-32 ${pertoVencer ? 'pt-[10.5rem]' : 'pt-16'}`}>
+      <ValorHoraBadge />
+      <main className={`w-full flex-1 px-4 pb-32 ${topOffset}`}>
         {pertoVencer ? <SubscriptionBanner dataVencimento={dataVencimento} /> : null}
         {!online ? (
           <div className="mb-4 flex items-center justify-center gap-2 rounded-lg border border-error/40 bg-error-container/40 px-3 py-2 text-[15px] font-semibold text-on-surface">

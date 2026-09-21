@@ -1,10 +1,9 @@
 import { Target } from 'lucide-react';
 import { useAppData } from '../../context/AppDataContext';
 import { computeCustoMensalFerramentas } from '../../utils/pricing';
-import { formatBRL } from '../../utils/formatters';
 
 export default function MetaPanel({ faturado }) {
-  const { profile, tools } = useAppData();
+  const { profile, tools, formatCurrency } = useAppData();
 
   const proLabore = profile?.proLabore || 0;
   const custosFixos = profile?.custosFixos || 0;
@@ -37,9 +36,9 @@ export default function MetaPanel({ faturado }) {
         <>
           <p className="text-[15px] font-normal leading-snug text-on-surface-variant">
             Custo do mês (pró-labore, custos, imposto, ferramentas):{' '}
-            <span className="font-mono font-bold text-on-surface">{formatBRL(custoTotal)}</span>
+            <span className="font-mono font-bold text-on-surface">{formatCurrency(custoTotal)}</span>
             <span className="mx-1">•</span>Alvo:{' '}
-            <span className="font-mono font-bold text-primary-container">{formatBRL(meta)}</span>
+            <span className="font-mono font-bold text-primary-container">{formatCurrency(meta)}</span>
           </p>
 
           <div className="h-3 w-full overflow-hidden rounded-full bg-surface-container-highest">

@@ -1,10 +1,11 @@
 import { Gauge } from 'lucide-react';
-import { formatBRL } from '../../utils/formatters';
 import Alert from '../ui/Alert';
+import { useAppData } from '../../context/AppDataContext';
 
 const LIMITE_MEI = 81000;
 
 export default function MeiPanel({ total, year }) {
+  const { formatCurrency } = useAppData();
   const percent = Math.min(100, (total / LIMITE_MEI) * 100);
   const ultrapassou = total > LIMITE_MEI;
 
@@ -17,7 +18,7 @@ export default function MeiPanel({ total, year }) {
 
       <div>
         <p className="font-mono text-2xl font-extrabold text-primary-container">
-          {formatBRL(total)}
+          {formatCurrency(total)}
         </p>
         <p className="text-[15px] font-normal text-on-surface-variant">
           Limite anual: R$ 81.000,00

@@ -1,7 +1,8 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { formatBRL } from '../../utils/formatters';
+import { useAppData } from '../../context/AppDataContext';
 
 export default function MonthBalance({ faturado, saidas, saldo }) {
+  const { formatCurrency } = useAppData();
   return (
     <section className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-3">
@@ -11,7 +12,7 @@ export default function MonthBalance({ faturado, saidas, saldo }) {
             <span className="text-[15px] font-semibold">Faturado</span>
           </div>
           <p className="font-mono text-[15px] font-extrabold text-tertiary">
-            {formatBRL(faturado)}
+            {formatCurrency(faturado)}
           </p>
         </div>
         <div className="flex flex-col gap-2 rounded-xl border border-zinc-border bg-surface-container p-4">
@@ -19,7 +20,7 @@ export default function MonthBalance({ faturado, saidas, saldo }) {
             <TrendingDown size={18} />
             <span className="text-[15px] font-semibold">Saídas</span>
           </div>
-          <p className="font-mono text-[15px] font-extrabold text-error">{formatBRL(saidas)}</p>
+          <p className="font-mono text-[15px] font-extrabold text-error">{formatCurrency(saidas)}</p>
         </div>
       </div>
 
@@ -30,7 +31,7 @@ export default function MonthBalance({ faturado, saidas, saldo }) {
             saldo >= 0 ? 'text-tertiary' : 'text-error'
           }`}
         >
-          {formatBRL(saldo)}
+          {formatCurrency(saldo)}
         </p>
       </div>
     </section>

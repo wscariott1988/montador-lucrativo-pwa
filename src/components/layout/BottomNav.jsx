@@ -21,8 +21,8 @@ export default function BottomNav() {
               to={tab.to}
               className="relative flex -top-5 flex-col items-center"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary-container text-on-primary-container shadow-yellow-bevel transition-all active:translate-y-0.5 active:shadow-none">
-                <Plus size={32} strokeWidth={2.5} />
+              <span className="flex h-14 w-14 items-center justify-center rounded border-2 border-[#FFC800] bg-primary-container text-on-primary-container shadow-yellow-bevel transition-all active:translate-y-0.5 active:shadow-none">
+                <Plus size={30} strokeWidth={3} />
               </span>
               <span className="mt-1 text-[15px] font-bold tracking-wide text-primary-container">
                 {tab.label}

@@ -10,6 +10,13 @@
   body {
     @apply bg-zinc-dark text-on-surface font-sans antialiased;
     min-height: 100dvh;
+    color-scheme: dark;
+  }
+
+  input,
+  select,
+  textarea {
+    color-scheme: dark;
   }
 
   /* Regra de ergonomia: nada de micro-texto abaixo de 15px em interacoes */

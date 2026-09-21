@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'Sistema Montador Lucrativo',
         short_name: 'Montador',
         description: 'Aplicativo de orçamentos e gestão para montadores de móveis',
-        theme_color: '#121214',
-        background_color: '#121214',
+        theme_color: '#121212',
+        background_color: '#121212',
         display: 'standalone',
         orientation: 'portrait',
         icons: [

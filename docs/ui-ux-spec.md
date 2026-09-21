@@ -1,25 +1,27 @@
 # UI/UX Specification & Google Stitch Master Prompt
 **Projeto:** Sistema Montador Lucrativo (PWA)
 **Público-Alvo:** Montadores de móveis em campo.
-**Identidade Visual:** Industrial Dark & DeWalt Yellow (#FFC200).
+**Identidade Visual:** Industrial Dark Suave & DeWalt Yellow (#FFC800).
 
 ---
 
 ## 1. Design System Tokens (Regras de Estilo DeWalt Inspired)
 
-* **Tema:** Dark Mode Industrial.
+* **Tema:** Dark Mode Industrial Suave.
 * **Cores Principais:**
-  * Background Principal: `#121214` (Dark Zinc / Preto Grafite)
-  * Cards e Superfícies: `#1C1D22` (Charcoal Slate)
-  * Bordas e Divisores: `#2E3038` (Muted Zinc Border)
-  * Cor Primária / Marca (Amarelo DeWalt): `#FFC200`
+  * Background Principal: `#121212` (Dark Suave / Preto Grafite Macio)
+  * Cards e Superfícies: `#1E1E1E` (Dark Suave Card)
+  * Bordas e Divisores: `rgba(255, 200, 0, 0.32)` (Amarelo DeWalt translúcido, 1px) e `#2E3038` (recesso)
+  * Cor Primária / Marca (Amarelo DeWalt): `#FFC800`
   * Cor Secundária / Ações de Campo (Ciano Industrial): `#0EA5E9` 
   * Sucesso / Entradas Financeiras: `#10B981` (Verde Esmeralda)
   * Erro / Saídas / Alertas: `#EF4444` (Vermelho Alerta)
   * Texto Principal: `#F8FAFC` (Branco de Alto Contraste)
   * Texto Secundário: `#94A3B8` (Cinza Muted)
-* **Tipografia:** Sans-serif robusta (minimo de 15px para textos normais, para garantir leitura externa).
-* **Navegação Inferior:** Bottom Bar com o FAB (Floating Action Button) centralizado.
+  * Cantos: flat industrial (2-4px), sem pills exceto círculos literais (avatar/bolinhas)
+* **Tipografia:** Inter (sans-serif robusta, mínimo de 15px para textos normais, para garantir leitura externa).
+* **Navegação Inferior:** Bottom Bar com o FAB (Floating Action Button) centralizado, redirecionando direto para "Novo Orçamento".
+* **Header:** Auto-oculta ao rolar para baixo e reaparece ao rolar para cima.
 
 ---
 
@@ -32,11 +34,12 @@ Act as an elite Mobile UI/UX Designer specializing in industrial-grade PWA tools
 Design a high-fidelity Dark Mode Mobile Web App interface for "Sistema Montador Lucrativo" (a business app for professional furniture assemblers), using a sleek DeWalt tool aesthetic.
 
 STRICT DESIGN SYSTEM:
-- Theme: Ultra-High Contrast Dark Mode (Background: #121214, Card: #1C1D22, Borders: #2E3038).
-- Primary Accent: DeWalt Yellow (#FFC200) for primary buttons, active states, and main totals.
+- Theme: Dark Suave (Background: #121212, Card: #1E1E1E, Borders: rgba(255,200,0,0.32)).
+- Primary Accent: DeWalt Yellow (#FFC800) for primary buttons, active states, and main totals.
 - Secondary Accent: Industrial Cyan (#0EA5E9) for utility buttons.
 - Positive/Money: Emerald Green (#10B981). Danger/Negative: Bright Red (#EF4444).
 - Ergonomics: Minimum font size 15px. Large touch targets (56px height for inputs/buttons). 
+- Flat shapes: 2-4px corner radius (no pills). Bottom bar '+' opens Novo Orçamento directly. 
 
 SCREENS TO GENERATE:
 
@@ -78,3 +81,34 @@ BOTTOM NAVIGATION BAR (All screens):
 Fixed dark bar with 5 icons: Ajustes, Clientes, a giant central DeWalt Yellow '+' FAB (Floating Action Button), Histórico, Finanças.
 
 Ensure pixel-perfect padding, zero micro-text clutter, and effortless thumb navigation.
+```
+
+---
+
+## 3. Regras de Negócio Implementadas
+
+### 3.1 Valor da Hora Global & Fórmula
+- Badge fixo **"Valor da Hora"** no topo de TODAS as telas do app do usuário (rotas `/app/*`, integrado no `AppLayout`).
+- Se os custos ainda não foram configurados, o badge exibe o botão **"Calcular Valor da Hora"**, que redireciona para a tela de Ajustes.
+- **Fórmula exata:** `ValorHora = (Pro-labore + Despesas Fixas + Depreciação Total de Ferramentas) / Horas no mês`.
+- **Padrão de jornada:** `176h/mês` (8h/dia × 22 dias úteis) quando o campo não for preenchido.
+
+### 3.2 Modo Privacidade (Permanente)
+- Toggle de privacidade **persistente** (ícone olho 👁️ no badge), salvo em `localStorage` na chave `ml_modo_privacidade`.
+- Com a privacidade ativa, **todos os valores financeiros** exibem `R$ ***`: valor da hora, pro-labore, despesas, preços de serviços, valor extra, peças, deslocamento, descontos, totais do orçamento, finanças, histórico e radar (função `formatCurrency` no `AppDataContext`).
+- Os **inputs financeiros** são mascarados/desabilitados durante o modo privacidade.
+- **Exportações (PDF / WhatsApp) nunca são mascaradas** — são destinadas ao cliente.
+
+### 3.3 Ferramentas & Depreciação
+- Módulo **"Gerenciar ferramentas"** em Ajustes: cada ferramenta possui valor, data de aquisição e vida útil em meses.
+- A depreciação é calculada mês a mês; ferramenta com vida útil esgotada (≥ 100%) recebe **indicador vermelho** (borda, badge e barra de progresso).
+- A **soma da depreciação mensal de todas as ferramentas é injetada automaticamente** nas despesas do cálculo do Valor da Hora.
+
+### 3.4 Busca de Serviços (Orçamento)
+- O seletor de serviços **abre imediatamente a lista completa ordenada ao receber foco** (sem exigir digitação).
+- **Ordenação:** mais utilizados primeiro (frequência persistida em `localStorage`, chave `ml_freq_servicos`), depois ordem alfabética.
+- A digitação mantém o **filtro ativo** sobre a lista ordenada.
+- Serviço **avulso** sempre permitido: aparece como sugestão quando o termo digitado não está no catálogo, além do botão dedicado `+ Avulso`.
+
+### 3.5 Validade da Proposta
+- A validade do orçamento é definida automaticamente em **7 dias** no formulário.

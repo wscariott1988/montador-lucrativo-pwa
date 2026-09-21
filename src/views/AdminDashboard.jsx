@@ -69,6 +69,15 @@ function toDateInputValue(value) {
   return toISODate(d);
 }
 
+// Formata minutos acumulados como "1h 25min", "45 min" ou "0 min".
+function formatDuracaoBR(min) {
+  const total = Math.max(0, Math.round(Number(min) || 0));
+  const horas = Math.floor(total / 60);
+  const restante = total % 60;
+  if (horas === 0) return restante > 0 ? `${restante} min` : '0 min';
+  return restante > 0 ? `${horas}h ${String(restante).padStart(2, '0')}min` : `${horas}h`;
+}
+
 function Tabs({ active, onChange }) {
   return (
     <div className="sticky top-16 z-40 -mx-4 flex gap-1 border-b border-zinc-border bg-zinc-dark/95 px-4 pt-3 pb-2 backdrop-blur-xl">
@@ -172,6 +181,12 @@ function CrmTab({ online, onChanged }) {
       )
     : users;
 
+  // Resumo geral do app (sobre os montadores carregados no CRM).
+  const usuariosAtivos = users.filter((u) => Number(u.acessosCount ?? 0) > 0);
+  const totalOrcamentos = users.reduce((soma, u) => soma + Number(u.orcamentosCount ?? 0), 0);
+  const tempoTotalMin = users.reduce((soma, u) => soma + Number(u.tempoUsoMinutos ?? 0), 0);
+  const mediaTempoMin = usuariosAtivos.length > 0 ? Math.round(tempoTotalMin / usuariosAtivos.length) : 0;
+
   return (
     <section className="flex flex-col gap-4 pb-8">
       <Input
@@ -186,6 +201,38 @@ function CrmTab({ online, onChanged }) {
           Sem conexão — o CRM precisa de internet para carregar os usuários.
         </p>
       ) : null}
+
+      <div className="rounded-xl border border-zinc-border bg-surface-container-high p-4">
+        <p className="text-xs font-bold tracking-wide text-on-surface-variant">
+          RESUMO GERAL DO APP
+        </p>
+        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+          <div>
+            <p className="text-2xl font-extrabold tracking-tight text-primary-container">
+              {usuariosAtivos.length}
+            </p>
+            <p className="mt-0.5 text-xs leading-tight text-on-surface-variant">
+              usuários ativos
+            </p>
+          </div>
+          <div>
+            <p className="text-2xl font-extrabold tracking-tight text-primary-container">
+              {totalOrcamentos}
+            </p>
+            <p className="mt-0.5 text-xs leading-tight text-on-surface-variant">
+              orçamentos gerados
+            </p>
+          </div>
+          <div>
+            <p className="text-2xl font-extrabold tracking-tight text-primary-container">
+              {formatDuracaoBR(mediaTempoMin)}
+            </p>
+            <p className="mt-0.5 text-xs leading-tight text-on-surface-variant">
+              tempo médio por ativo
+            </p>
+          </div>
+        </div>
+      </div>
 
       {filtered.length === 0 ? (
         <p className="rounded-lg bg-surface-container px-4 py-6 text-center text-[15px] text-on-surface-variant">
@@ -236,6 +283,25 @@ function CrmTab({ online, onChanged }) {
                   {assinatura.label}
                 </span>
                 <span className="font-mono">{usuario.telefone || '—'}</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-lg bg-surface-container-high p-3">
+                  <p className="text-[13px] font-semibold text-on-surface">
+                    📊 {Number(usuario.acessosCount ?? 0)} acessos
+                  </p>
+                  <p className="mt-0.5 text-xs text-on-surface-variant">
+                    🕒 Último: {formatDateTimeBR(usuario.ultimoAcessoAt) || '—'}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-surface-container-high p-3">
+                  <p className="text-[13px] font-semibold text-on-surface">
+                    ⏱️ {formatDuracaoBR(usuario.tempoUsoMinutos)} de uso
+                  </p>
+                  <p className="mt-0.5 text-xs text-on-surface-variant">
+                    📄 {Number(usuario.orcamentosCount ?? 0)} orçamentos
+                  </p>
+                </div>
               </div>
 
               <p className="text-[15px] text-on-surface-variant">

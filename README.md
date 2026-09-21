@@ -58,6 +58,21 @@ Para cada montador é exibida a `dataVencimento`, além de:
 - Seletor de data (`<input type="date">`) + botão "Salvar data".
 - Botão **"+30 Dias (recebi o R$ 19,90)"** que adiciona 30 dias ao vencimento e marca a assinatura como `ativa`.
 
+## Métricas e engajamento
+
+O app rastreia automaticamente, no documento `users/{uid}` de cada montador:
+
+| Campo | Como é preenchido |
+| --- | --- |
+| `acessosCount` (number) | Incrementado a cada sessão iniciada / recarga do app (`useAnalytics` no `AppLayout`). |
+| `ultimoAcessoAt` (Timestamp) | Última vez que o montador abriu o app. |
+| `tempoUsoMinutos` (number) | Timer suave em segundo plano acumula minutos enquanto o app está visível/focado no navegador/PWA; grava em lotes no Firestore. |
+| `orcamentosCount` (number) | Incrementado sempre que um orçamento é salvo (`NewBudgetView`). |
+
+No Painel Admin (aba CRM), cada card de montador exibe um bloco com: total de acessos 📊, último acesso 🕒, tempo de uso ⏱️ e orçamentos criados 📄. No topo da aba há um resumo geral do app (usuários ativos, total de orçamentos gerados e tempo médio de uso por ativo).
+
+Nenhuma regra nova do Firestore é necessária: o próprio dono do documento já pode atualizar o próprio perfil (`isOwner`).
+
 ## Como Migrar para o Firebase Storage no Futuro
 
 Hoje o upload de imagens é feito na API gratuita da **ImgBB**. A migração para o **Firebase Storage** é simples, porque a troca envolve **apenas a função de upload usada no Admin**:
@@ -88,14 +103,17 @@ Nenhum outro componente depende da ImgBB diretamente: tudo passa pelo campo `ima
 src/
 ├── services/
 │   ├── imgbbService.js            # Upload gratuito via ImgBB (compressão client-side)
+│   ├── analyticsService.js        # Acessos, tempo de uso e orçamentos (metricas)
 │   ├── opportunitiesService.js    # Radar + vagas + admin
 │   └── userService.js             # Perfil, trial e atualização de assinatura (admin)
+├── hooks/
+│   └── useAnalytics.js            # Registro de acesso + timer de tempo de uso
 ├── utils/
 │   └── subscription.js            # Cálculo de dias restantes/expiração + link de renovação
 ├── components/layout/
 │   ├── SubscriptionBanner.jsx     # Banner fixo (≤5 dias para vencer)
 │   └── SubscriptionLockScreen.jsx # Tela de bloqueio (assinatura expirada)
 └── views/
-    ├── AdminDashboard.jsx         # CRM (assinatura) + Postar Vaga (foto) + Vagas
+    ├── AdminDashboard.jsx         # CRM (assinatura + métricas) + Postar Vaga (foto) + Vagas
     └── RadarView.jsx              # Cards com foto (imageUrl) e botão WhatsApp
 ```

@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { WifiOff } from 'lucide-react';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { useAppData } from '../../context/AppDataContext';
+import useAnalytics from '../../hooks/useAnalytics';
 import {
   assinaturaExpirada,
   assinaturaPertoVencer,
@@ -30,6 +31,9 @@ export default function AppLayout() {
   const dataVencimento = profile?.dataVencimento;
   const expirada = assinaturaExpirada(dataVencimento);
   const pertoVencer = !expirada && assinaturaPertoVencer(dataVencimento);
+
+  // Acessos/sessao + tempo de uso em segundo plano (metricas de engajamento).
+  useAnalytics();
 
   // Assinatura vencida: bloqueia TODO o acesso ao app ate acertar a mensalidade.
   if (expirada) {

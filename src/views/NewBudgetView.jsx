@@ -5,6 +5,7 @@ import { useAppData } from '../context/AppDataContext';
 import { computeValorHora } from '../utils/pricing';
 import { toISODate } from '../utils/formatters';
 import { num, money, gerarNumeroOrcamento, buildBudgetPayload, saveOrcamento, buildWhatsappText } from '../services/budgetService';
+import { incrementarOrcamentos } from '../services/analyticsService';
 import { generateBudgetPdf } from '../services/pdfService';
 import ServicesEditor from '../components/budget/ServicesEditor';
 import PartsEditor from '../components/budget/PartsEditor';
@@ -166,6 +167,7 @@ export default function NewBudgetView() {
     setIsSubmitting(true);
     try {
       await saveOrcamento(uidUser, dados);
+      await incrementarOrcamentos(uidUser);
       setToast({ tone: 'success', message: 'Orçamento salvo no histórico!' });
       resetForm();
     } catch {

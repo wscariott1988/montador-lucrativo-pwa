@@ -69,6 +69,8 @@ export async function createTrialProfile({ uid, email, telefone }) {
     plano: 'trial',
     trialDataInicio: serverTimestamp(),
     trialDataFim: Timestamp.fromDate(trialEndDate()),
+    dataVencimento: Timestamp.fromDate(trialEndDate()),
+    statusAssinatura: 'trial',
     privacidadeValores: false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -76,4 +78,31 @@ export async function createTrialProfile({ uid, email, telefone }) {
 
   await setDoc(doc(db, 'users', uid), profile);
   return { uid, ...profile };
+}
+
+// ---------------------------------------------------------------------------
+// ADMIN — controle de assinatura (R$ 19,90/mes).
+// Recebe uma Date (apenas dia) e define dataVencimento + statusAssinatura.
+// Permitido apenas pelo Firestore (isAdmin()) ou pelo proprio dono.
+// ---------------------------------------------------------------------------
+export async function atualizarAssinaturaAdmin({ uid, dataVencimento }) {
+  const due =
+    dataVencimento instanceof Date && !Number.isNaN(dataVencimento.getTime())
+      ? dataVencimento
+      : trialEndDate();
+  due.setHours(23, 59, 59, 999);
+
+  const hoje = new Date();
+  const vencida = new Date(due.getFullYear(), due.getMonth(), due.getDate()) <
+    new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
+  await setDoc(
+    doc(db, 'users', uid),
+    {
+      dataVencimento: Timestamp.fromDate(due),
+      statusAssinatura: vencida ? 'expirada' : 'ativa',
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }

@@ -134,6 +134,20 @@ export default function RadarView() {
                 </div>
               </div>
 
+              {vaga.imageUrl ? (
+                <figure className="overflow-hidden rounded-lg border border-zinc-border bg-surface-container-high">
+                  <img
+                    src={vaga.imageUrl}
+                    alt={`Foto da vaga ${vaga.titulo}`}
+                    loading="lazy"
+                    className="h-56 w-full object-cover"
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </figure>
+              ) : null}
+
               {vaga.descricao ? (
                 <p className="text-[15px] leading-relaxed text-on-surface-variant">
                   {vaga.descricao}

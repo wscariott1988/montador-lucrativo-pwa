@@ -61,12 +61,14 @@ export async function postOportunidadeAdmin({
   descricao,
   cidadeUf,
   valorEstimado,
+  imageUrl = '',
 }) {
   await addDoc(oportunidadesCol(), {
     titulo: String(titulo ?? '').trim(),
     descricao: String(descricao ?? '').trim(),
     cidadeUf: String(cidadeUf ?? '').trim(),
     valorEstimado: Number(valorEstimado) || 0,
+    imageUrl: String(imageUrl ?? '').trim(),
     status: 'disponivel',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),

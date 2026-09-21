@@ -22,6 +22,7 @@ import {
 import { formatBRL, formatDateTimeBR, formatRelativeTime, digitsOnly } from '../utils/formatters';
 import Input from '../components/ui/Input';
 import Toast from '../components/ui/Toast';
+import SplashLoader from '../components/ui/SplashLoader';
 
 const TABS = [
   { id: 'crm', label: 'CRM', icon: Users },
@@ -367,7 +368,7 @@ function VagasAtivasTab({ onChanged }) {
 }
 
 export default function AdminDashboard() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: loadingAuth } = useAuth();
   const [active, setActive] = useState('crm');
   const [toast, setToast] = useState(null);
   const [online, setOnline] = useState(navigator.onLine);
@@ -382,6 +383,12 @@ export default function AdminDashboard() {
       window.removeEventListener('offline', off);
     };
   }, []);
+
+  // Aguarda o Firebase Auth terminar de verificar o estado do usuario antes
+  // de validar o acesso, evitando redirecionar (tela preta) no load/refresh.
+  if (loadingAuth) {
+    return <SplashLoader />;
+  }
 
   // Blindagem: somente o e-mail admin (VITE_ADMIN_EMAIL) acessa o painel.
   if (!user || !isAdminEmail(user.email)) {

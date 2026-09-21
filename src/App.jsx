@@ -1,5 +1,4 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Hammer } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppDataProvider } from './context/AppDataContext';
 import LoginView from './views/LoginView';
@@ -12,24 +11,12 @@ import HistoryView from './views/HistoryView';
 import FinanceView from './views/FinanceView';
 import RadarView from './views/RadarView';
 import AdminDashboard from './views/AdminDashboard';
-
-function SplashScreen() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-zinc-dark">
-      <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary-container text-on-primary-container shadow-yellow-bevel">
-        <Hammer size={32} strokeWidth={2.5} className="animate-pulse" />
-      </div>
-      <p className="text-base font-bold uppercase tracking-wide text-primary-container">
-        Montador Lucrativo
-      </p>
-    </div>
-  );
-}
+import SplashLoader from './components/ui/SplashLoader';
 
 function AppRoutes() {
   const { user, profile, loading } = useAuth();
 
-  if (loading) return <SplashScreen />;
+  if (loading) return <SplashLoader />;
 
   // Nao autenticado -> tela de login
   if (!user) {

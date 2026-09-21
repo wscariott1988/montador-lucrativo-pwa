@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-zinc-dark text-on-surface font-sans antialiased;
+    min-height: 100dvh;
+  }
+
+  /* Regra de ergonomia: nada de micro-texto abaixo de 15px em interacoes */
+  input,
+  button,
+  select,
+  textarea {
+    @apply min-h-[15px] text-[15px];
+  }
+}
+
+@layer utilities {
+  /* Safe areas do dispositivo (notch / barra gestual) */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

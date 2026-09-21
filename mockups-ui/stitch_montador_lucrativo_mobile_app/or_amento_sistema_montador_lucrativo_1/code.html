@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,400;0,700;0,800;0,900;1,400&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'background': '#131315', 'on-tertiary-container': '#006242', 'surface-bright': '#39393b', 'tertiary-fixed': '#6ffbbe', 'surface-container-high': '#2a2a2c', 'primary': '#ffe5b0', 'on-tertiary': '#003824', 'on-surface-variant': '#d3c5ab', 'surface-container-highest': '#353437', 'secondary-fixed-dim': '#89ceff', 'on-primary': '#3f2e00', 'inverse-on-surface': '#303032', 'on-secondary-fixed-variant': '#004c6e', 'tertiary': '#7effc4', 'error': '#ffb4ab', 'surface-container': '#201f21', 'secondary-container': '#00a2e6', 'tertiary-fixed-dim': '#4edea3', 'inverse-surface': '#e5e1e4', 'on-error-container': '#ffdad6', 'primary-container': '#ffc200', 'surface-variant': '#353437', 'surface-tint': '#f9bd00', 'outline': '#9c8f78', 'tertiary-container': '#54e3a7', 'on-secondary-fixed': '#001e2f', 'surface-container-low': '#1b1b1d', 'error-container': '#93000a', 'on-tertiary-fixed': '#002113', 'on-primary-container': '#6d5100', 'primary-fixed-dim': '#f9bd00', 'outline-variant': '#4f4632', 'on-secondary-container': '#00344e', 'secondary': '#89ceff', 'secondary-fixed': '#c9e6ff', 'surface-dim': '#131315', 'on-error': '#690005', 'on-surface': '#e5e1e4', 'surface': '#131315', 'on-background': '#e5e1e4', 'inverse-primary': '#785a00', 'on-secondary': '#00344d', 'on-tertiary-fixed-variant': '#005236', 'on-primary-fixed-variant': '#5b4300', 'primary-fixed': '#ffdf9c', 'surface-container-lowest': '#0e0e10', 'on-primary-fixed': '#251a00' }, borderRadius: { 'DEFAULT': '0.125rem', 'lg': '0.25rem', 'xl': '0.5rem', 'full': '0.75rem' }, spacing: { 'space-lg': '1.5rem', 'margin': '1rem', 'space-xl': '2rem', 'space-xs': '0.5rem', 'space-sm': '0.75rem', 'space-md': '1rem', 'gutter': '1rem' }, fontFamily: { 'headline-md': ['Chivo'], 'headline-lg': ['Chivo'], 'label-sm': ['Space Mono'], 'label-md': ['Space Mono'], 'body-md': ['Chivo'], 'headline-sm': ['Chivo'], 'body-lg': ['Chivo'], 'label-lg': ['Chivo'] }, fontSize: { 'headline-md': ['24px', { lineHeight: '30px', fontWeight: '700' }], 'headline-lg': ['30px', { lineHeight: '36px', fontWeight: '800' }], 'label-sm': ['15px', { lineHeight: '18px', fontWeight: '400' }], 'label-md': ['15px', { lineHeight: '18px', fontWeight: '700' }], 'body-md': ['15px', { lineHeight: '22px', fontWeight: '400' }], 'headline-sm': ['20px', { lineHeight: '26px', fontWeight: '700' }], 'body-lg': ['17px', { lineHeight: '24px', fontWeight: '400' }], 'label-lg': ['16px', { lineHeight: '20px', fontWeight: '700' }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; background-color: #131315; } body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl pt-safe"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs min-w-0"><button aria-label="Voltar" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-primary-container active:scale-95 transition-transform" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm uppercase tracking-wide text-on-surface truncate">Nova Ordem</h1></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="flex flex-col relative w-full px-margin pt-16 pb-margin bg-surface min-h-screen"><div class="flex flex-col w-full pb-10 space-y-6">
+<!-- Sub-Header / Clear Action -->
+<div class="flex items-center justify-between bg-surface-container-low px-4 py-3 rounded-lg">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-headline-sm text-headline-sm uppercase tracking-wide text-on-surface">Novo Orçamento</span>
+</div>
+<button class="h-10 px-4 flex items-center gap-1.5 bg-surface-container-highest text-on-surface-variant hover:text-on-surface active:scale-95 transition-transform rounded-lg font-label-md text-label-md uppercase" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+      Limpar
+    </button>
+</div>
+<!-- SECTION 1: SERVIÇOS -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">construction</span>
+<h2 class="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface">1. Serviços</h2>
+</div>
+<span class="bg-surface-container-highest text-primary-container font-label-md text-label-sm px-2.5 py-1 rounded">1 ITEM</span>
+</div>
+<!-- Search Input -->
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</div>
+<input class="w-full h-14 pl-12 pr-4 bg-surface-container text-on-surface placeholder:text-on-surface-variant/60 font-body-md text-body-md rounded-lg focus:outline-none focus:bg-surface-container-high transition-colors" placeholder="Buscar serviço catalogado..." type="text"/>
+</div>
+<!-- Actions Row -->
+<div class="grid grid-cols-2 gap-3">
+<button class="h-14 flex items-center justify-center gap-2 bg-surface-container-high text-on-surface font-label-lg text-label-lg rounded-lg active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-primary-container text-[22px]">add_circle</span>
+        + Avulso
+      </button>
+<button class="h-14 flex items-center justify-center gap-2 bg-secondary-container/20 text-secondary-fixed font-label-lg text-label-lg rounded-lg active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-secondary-fixed text-[22px]">menu_book</span>
+        Manual
+      </button>
+</div>
+<!-- Added Item Preview Card -->
+<div class="bg-surface-container-low p-4 rounded-lg relative overflow-hidden flex flex-col gap-3">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex items-start justify-between gap-2 pl-2">
+<div class="min-w-0 flex-1">
+<p class="font-label-lg text-label-lg text-on-surface leading-tight">Montagem Guarda-Roupa 6 Portas Casal</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Ferragens padrão + 4 gavetas</p>
+</div>
+<button aria-label="Remover serviço" class="w-10 h-10 flex items-center justify-center bg-surface-container-highest text-error rounded-lg active:scale-90 transition-transform shrink-0" type="button">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="flex items-center justify-between pl-2 pt-1">
+<!-- Counter -->
+<div class="flex items-center bg-surface-container-highest rounded-lg">
+<button class="w-11 h-11 flex items-center justify-center text-on-surface active:bg-surface-bright rounded-l-lg" type="button">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<span class="w-10 text-center font-label-md text-label-md text-primary-container">1</span>
+<button class="w-11 h-11 flex items-center justify-center text-on-surface active:bg-surface-bright rounded-r-lg" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+<!-- Price -->
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Subtotal</span>
+<span class="font-headline-sm text-headline-sm text-primary-container">R$ 220,00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: PEÇAS E COMPONENTES -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">hardware</span>
+<h2 class="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface">2. Peças &amp; Insumos</h2>
+</div>
+<span class="bg-surface-container-highest text-primary-container font-label-md text-label-sm px-2.5 py-1 rounded">1 ITEM</span>
+</div>
+<!-- Select Dropdown -->
+<div class="relative w-full">
+<select class="w-full h-14 pl-4 pr-12 bg-surface-container text-on-surface font-body-md text-body-md rounded-lg appearance-none focus:outline-none focus:bg-surface-container-high transition-colors">
+<option disabled="" selected="" value="">Selecionar ferragem ou insumo...</option>
+<option value="dobradica">Kit Dobradiças 35mm c/ Amortecedor</option>
+<option value="corradica">Corrediça Telescópica 450mm</option>
+<option value="cantoneira">Cantoneira Reforçada Metálica</option>
+<option value="tapa-furo">Cartela Adesivo Tapa-furo</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[24px]">expand_more</span>
+</div>
+</div>
+<!-- 3-Element Stepper & Add Row -->
+<div class="flex items-center gap-2">
+<div class="w-20 shrink-0">
+<input aria-label="Quantidade de peças" class="w-full h-14 bg-surface-container text-on-surface font-label-md text-label-md text-center rounded-lg focus:outline-none focus:bg-surface-container-high" min="1" type="number" value="4"/>
+</div>
+<div class="flex-1 relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant font-label-sm text-label-sm">R$</div>
+<input aria-label="Valor unitário" class="w-full h-14 pl-10 pr-3 bg-surface-container text-on-surface font-label-md text-label-md rounded-lg focus:outline-none focus:bg-surface-container-high" placeholder="0,00" type="text" value="15,00"/>
+</div>
+<button aria-label="Adicionar peça" class="w-14 h-14 shrink-0 flex items-center justify-center bg-primary-container text-on-primary-container font-bold rounded-lg shadow-md active:translate-y-0.5 transition-transform" type="button">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+<!-- Added Part Card -->
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[20px]">handyman</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Kit Dobradiças Amortecedor 35mm</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">4 un × R$ 15,00</p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="font-label-md text-label-md text-primary-container">R$ 60,00</span>
+<button aria-label="Remover peça" class="text-error/80 hover:text-error active:scale-90 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+</section>
+<!-- SECTION 3: DADOS DO CLIENTE -->
+<section class="space-y-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">badge</span>
+<h2 class="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface">3. Dados do Cliente</h2>
+</div>
+<div class="space-y-3">
+<!-- Nome -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Nome Completo</label>
+<input class="w-full h-14 px-4 bg-surface-container text-on-surface font-body-md text-body-md rounded-lg focus:outline-none focus:bg-surface-container-high transition-colors" placeholder="Nome completo do cliente" type="text" value="Carlos Eduardo Silveira"/>
+</div>
+<!-- CPF -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">CPF (Opcional)</label>
+<input class="w-full h-14 px-4 bg-surface-container text-on-surface font-label-sm text-label-sm rounded-lg focus:outline-none focus:bg-surface-container-high transition-colors" placeholder="000.000.000-00" type="text"/>
+</div>
+<!-- Cidade & Data -->
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Cidade</label>
+<input class="w-full h-14 px-4 bg-surface-container text-on-surface font-body-md text-body-md rounded-lg focus:outline-none" placeholder="São Paulo" type="text" value="São Paulo"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Data Execução</label>
+<div class="relative">
+<input class="w-full h-14 px-4 bg-surface-container text-on-surface font-label-sm text-label-sm rounded-lg focus:outline-none" type="date" value="2026-09-18"/>
+</div>
+</div>
+</div>
+<!-- Validade & Deslocamento -->
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Validade</label>
+<input class="w-full h-14 px-4 bg-surface-container text-on-surface font-label-md text-label-md rounded-lg focus:outline-none" type="text" value="15 dias"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Deslocamento (R$)</label>
+<input class="w-full h-14 px-4 bg-surface-container text-primary-container font-label-md text-label-md rounded-lg focus:outline-none" type="text" value="40,00"/>
+</div>
+</div>
+<!-- Observações -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Observações Operacionais</label>
+<textarea class="w-full p-4 bg-surface-container text-on-surface placeholder:text-on-surface-variant/60 font-body-md text-body-md rounded-lg focus:outline-none resize-none" placeholder="Ex: Levar escada grande e parafusadeira de impacto..." rows="3">Apartamento no 4º andar (com elevador). Cliente solicita proteção de piso para não riscar porcelanato.</textarea>
+</div>
+</div>
+</section>
+<!-- SECTION 4: PAGAMENTO -->
+<section class="space-y-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">payments</span>
+<h2 class="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface">4. Forma de Pagamento</h2>
+</div>
+<!-- Pill-Buttons -->
+<div class="grid grid-cols-3 gap-2" id="payment-options">
+<button class="h-12 flex items-center justify-center gap-1.5 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-lg active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+        Pix
+      </button>
+<button class="h-12 flex items-center justify-center bg-surface-container text-on-surface font-label-md text-label-md rounded-lg active:scale-95 transition-transform" type="button">
+        Dinheiro
+      </button>
+<button class="h-12 flex items-center justify-center bg-surface-container text-on-surface font-label-md text-label-md rounded-lg active:scale-95 transition-transform" type="button">
+        Cartão
+      </button>
+</div>
+<!-- Condições Adicionais -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Condições Negociadas</label>
+<input class="w-full h-14 px-4 bg-surface-container text-on-surface font-body-md text-body-md rounded-lg focus:outline-none" type="text" value="À vista no Pix ou 2x no cartão"/>
+</div>
+</section>
+<!-- SECTION 5: TOTAL E AÇÕES -->
+<section class="space-y-4 pt-2">
+<!-- Highlighted Industrial Box -->
+<div class="bg-surface-container-low p-5 rounded-xl flex flex-col gap-2 relative overflow-hidden shadow-lg">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/5 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Total Geral Calculado</span>
+<span class="material-symbols-outlined text-primary-container">receipt_long</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary-container tracking-tight">R$ 320,00</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">
+        Serviços: <span class="text-on-surface">R$ 220,00</span> • Peças/Desloc: <span class="text-on-surface">R$ 100,00</span>
+</p>
+</div>
+<!-- 3-Column Quick Actions -->
+<div class="grid grid-cols-3 gap-2">
+<!-- 1: Agendar -->
+<button class="h-14 flex flex-col items-center justify-center bg-surface-container-high text-on-surface rounded-lg active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[22px] text-secondary">event</span>
+<span class="font-label-sm text-label-sm mt-0.5">Agendar</span>
+</button>
+<!-- 2: Copiar WhatsApp -->
+<button class="h-14 flex flex-col items-center justify-center bg-surface-container-high text-on-surface rounded-lg active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[22px] text-primary-container">content_copy</span>
+<span class="font-label-sm text-label-sm mt-0.5">Copiar Zap</span>
+</button>
+<!-- 3: Gerar PDF -->
+<button class="h-14 flex flex-col items-center justify-center bg-tertiary-container text-on-tertiary-container font-bold rounded-lg active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+<span class="font-label-sm text-label-sm mt-0.5 uppercase">Proposta</span>
+</button>
+</div>
+<!-- Termo de Garantia Button -->
+<button class="w-full h-14 flex items-center justify-center gap-2 bg-primary-container/15 text-primary-container font-label-lg text-label-lg uppercase rounded-lg active:scale-98 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+      Termo de Garantia (90 Dias)
+    </button>
+<!-- Salvar no Histórico Primary Action -->
+<button class="w-full h-14 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container font-label-lg text-label-lg uppercase rounded-lg shadow-md active:translate-y-0.5 transition-transform" type="button">
+<span class="material-symbols-outlined text-[22px]">save</span>
+      Salvar no Histórico
+    </button>
+</section>
+</div>
+<script>
+  // Simple micro-interaction for payment pill selection
+  const payButtons = document.querySelectorAll('#payment-options button');
+  payButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      payButtons.forEach(b => {
+        b.className = 'h-12 flex items-center justify-center bg-surface-container text-on-surface font-label-md text-label-md rounded-lg active:scale-95 transition-transform';
+        const icon = b.querySelector('.material-symbols-outlined');
+        if (icon) icon.remove();
+      });
+      btn.className = 'h-12 flex items-center justify-center gap-1.5 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-lg active:scale-95 transition-transform';
+      btn.insertAdjacentHTML('afterbegin', '<span class="material-symbols-outlined text-[18px]">check</span>');
+    });
+  });
+</script></main></body></html>

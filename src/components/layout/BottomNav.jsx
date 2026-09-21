@@ -38,12 +38,16 @@ export default function BottomNav() {
                 }`
               }
             >
-              <tab.icon size={22} strokeWidth={2} />
-              <span
-                className={`mt-1 text-[15px] ${isActive ? 'font-bold' : 'font-medium'}`}
-              >
-                {tab.label}
-              </span>
+              {({ isActive }) => (
+                <>
+                  <tab.icon size={22} strokeWidth={2} />
+                  <span
+                    className={`mt-1 text-[15px] ${isActive ? 'font-bold' : 'font-medium'}`}
+                  >
+                    {tab.label}
+                  </span>
+                </>
+              )}
             </NavLink>
           )
         )}

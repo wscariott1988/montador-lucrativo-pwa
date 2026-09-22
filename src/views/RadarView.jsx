@@ -26,8 +26,6 @@ function RadarSkeleton({ count = 4 }) {
   );
 }
 
-const BETA_BADGE = 'bg-primary-container text-black';
-
 export default function RadarView() {
   const { formatCurrency } = useAppData();
   const [vagas, setVagas] = useState([]);

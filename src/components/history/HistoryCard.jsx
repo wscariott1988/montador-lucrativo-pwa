@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { CheckCircle2, RotateCcw, Navigation, FileText, Trash2, Loader2 } from 'lucide-react';
 import { formatDateTimeBR, formatDateBR } from '../../utils/formatters';
 import { buildSnapshotFromDoc, buildEnderecoCompleto } from '../../services/historyService';
 import { generateBudgetPdf } from '../../services/pdfService';
+import { dadosMinimosNegocioPendentes, montarDadosNegocio } from '../../utils/businessData';
+import DadosPendentesModal from '../ui/DadosPendentesModal';
 import { useAppData } from '../../context/AppDataContext';
 
 const STATUS_META = {
@@ -10,23 +13,30 @@ const STATUS_META = {
     className: 'bg-[#E5A93C]/20 text-[#E5A93C]',
   },
   pago: {
-    label: 'Pago',
+    label: 'Recebido',
     className: 'bg-tertiary/20 text-tertiary',
   },
 };
 
 export default function HistoryCard({ orcamento, clientes, blocked, onToggleStatus, onDelete }) {
-  const { formatCurrency } = useAppData();
+  const { profile, formatCurrency } = useAppData();
+  const [pdfPendentes, setPdfPendentes] = useState([]);
   const meta = STATUS_META[orcamento.status] || STATUS_META.pendente;
   const endereco = buildEnderecoCompleto(orcamento, clientes);
   const temEndereco = endereco.trim().length > 0;
+  const recebido = orcamento.status === 'pago';
 
   function handlePdf() {
     if (blocked) return;
+    const pendentes = dadosMinimosNegocioPendentes(profile);
+    if (pendentes.length > 0) {
+      setPdfPendentes(pendentes);
+      return;
+    }
     try {
       const snapshot = buildSnapshotFromDoc(orcamento);
       if (!snapshot.numero && !snapshot.totalGeral) return;
-      generateBudgetPdf(snapshot);
+      generateBudgetPdf(snapshot, montarDadosNegocio(profile));
     } catch {
       // Tratado pela view (toast) — erro silencioso aqui apenas para nao travar o card
     }
@@ -79,20 +89,20 @@ export default function HistoryCard({ orcamento, clientes, blocked, onToggleStat
           type="button"
           disabled={blocked}
           onClick={onToggleStatus}
-          className={`flex h-14 flex-1 items-center justify-center gap-2 rounded-lg text-[15px] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-            orcamento.status === 'pago'
-              ? 'bg-on-surface/10 text-on-surface hover:bg-on-surface/15'
+          className={`flex h-14 flex-1 items-center justify-center gap-2 rounded-lg text-[15px] font-bold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+            recebido
+              ? 'bg-tertiary text-on-tertiary shadow-yellow-bevel hover:bg-tertiary-container active:translate-y-0.5 active:shadow-none'
               : 'bg-tertiary/10 text-tertiary hover:bg-tertiary/20'
           }`}
         >
           {blocked ? (
             <Loader2 size={20} className="animate-spin" />
-          ) : orcamento.status === 'pago' ? (
+          ) : recebido ? (
             <RotateCcw size={20} />
           ) : (
             <CheckCircle2 size={20} />
           )}
-          {orcamento.status === 'pago' ? 'Reabrir' : 'Receber'}
+          Recebido
         </button>
       </div>
 
@@ -130,6 +140,12 @@ export default function HistoryCard({ orcamento, clientes, blocked, onToggleStat
           Excluir
         </button>
       </div>
+
+      <DadosPendentesModal
+        open={pdfPendentes.length > 0}
+        pendentes={pdfPendentes}
+        onClose={() => setPdfPendentes([])}
+      />
     </article>
   );
 }

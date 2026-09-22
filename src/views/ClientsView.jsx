@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Users, Search, UserPlus, UserRound } from 'lucide-react';
+import { Search, UserPlus, UserRound } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
 import ClientCard from '../components/clients/ClientCard';
 import ClientForm from '../components/clients/ClientForm';
@@ -48,11 +48,7 @@ export default function ClientsView() {
 
   return (
     <section className="flex flex-col gap-4 pb-8">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Users size={20} className="text-primary-container" />
-          <h2 className="text-base font-semibold text-on-surface">Clientes</h2>
-        </div>
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={() => setModal({ mode: 'create' })}

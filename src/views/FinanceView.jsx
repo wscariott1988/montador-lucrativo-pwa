@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Wallet } from 'lucide-react';
+import { ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useFinancePeriod } from '../hooks/useFinancePeriod';
 import { periodISO, yearISO, addDespesa, addReceitaAvulsa, deleteDespesa, deleteReceita } from '../services/financeService';
@@ -8,7 +8,7 @@ import MonthSelector from '../components/finance/MonthSelector';
 import MonthBalance from '../components/finance/MonthBalance';
 import MetaPanel from '../components/finance/MetaPanel';
 import ObligationsGov from '../components/finance/ObligationsGov';
-import TransactionForm from '../components/finance/TransactionForm';
+import TransactionModal from '../components/finance/TransactionModal';
 import TransactionsList from '../components/finance/TransactionsList';
 
 export default function FinanceView() {
@@ -20,6 +20,7 @@ export default function FinanceView() {
   const mesAtual = hoje.getMonth() + 1;
 
   const [mesAno, setMesAno] = useState({ ano: anoAtual, mes: mesAtual });
+  const [modalTipo, setModalTipo] = useState(null);
 
   const period = useMemo(() => periodISO(mesAno.ano, mesAno.mes), [mesAno]);
   const yearPeriod = useMemo(() => yearISO(anoAtual), [anoAtual]);
@@ -38,9 +39,23 @@ export default function FinanceView() {
 
   return (
     <section className="flex flex-col gap-5 pb-8">
-      <div className="flex items-center gap-2">
-        <Wallet size={20} className="text-primary-container" />
-        <h2 className="text-base font-semibold text-on-surface">Finanças</h2>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => setModalTipo('entrada')}
+          className="flex h-14 items-center justify-center gap-2 rounded-lg bg-tertiary text-on-tertiary text-[15px] font-bold shadow-yellow-bevel transition-all hover:bg-tertiary-container active:translate-y-0.5 active:shadow-none"
+        >
+          <ArrowUpCircle size={22} strokeWidth={2.5} />
+          + Entrada
+        </button>
+        <button
+          type="button"
+          onClick={() => setModalTipo('saida')}
+          className="flex h-14 items-center justify-center gap-2 rounded-lg bg-error text-on-error text-[15px] font-bold shadow-red-bevel transition-all hover:bg-[#DC2626] active:translate-y-0.5 active:shadow-none"
+        >
+          <ArrowDownCircle size={22} strokeWidth={2.5} />
+          - Saída
+        </button>
       </div>
 
       <MeiPanel total={ano.faturado} year={anoAtual} />
@@ -59,15 +74,6 @@ export default function FinanceView() {
 
       <ObligationsGov />
 
-      <TransactionForm
-        tipo="saida"
-        onSubmit={(dados) => uid && addDespesa(uid, dados)}
-      />
-      <TransactionForm
-        tipo="entrada"
-        onSubmit={(dados) => uid && addReceitaAvulsa(uid, dados)}
-      />
-
       <div className="flex flex-col gap-2">
         <h3 className="text-base font-semibold text-on-surface">Lançamentos do mês</h3>
         <TransactionsList
@@ -77,6 +83,19 @@ export default function FinanceView() {
           onDeleteReceita={(id) => uid && deleteReceita(uid, id)}
         />
       </div>
+
+      <TransactionModal
+        open={modalTipo === 'entrada'}
+        tipo="entrada"
+        onClose={() => setModalTipo(null)}
+        onSubmit={(dados) => uid && addReceitaAvulsa(uid, dados)}
+      />
+      <TransactionModal
+        open={modalTipo === 'saida'}
+        tipo="saida"
+        onClose={() => setModalTipo(null)}
+        onSubmit={(dados) => uid && addDespesa(uid, dados)}
+      />
     </section>
   );
 }

@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Wrench, Plus, Check, X, Pencil, Trash2, AlertTriangle } from 'lucide-react';
+import { Wrench, Plus, Pencil, Trash2, AlertTriangle, CheckCircle2, CloudOff } from 'lucide-react';
+import Modal from '../ui/Modal';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
+import Alert from '../ui/Alert';
 import { useAppData } from '../../context/AppDataContext';
 import {
   computeDepreciacaoMensal,
@@ -17,73 +19,126 @@ function moneyToDraft(value) {
   return String(Number(value)).replace('.', ',');
 }
 
-export default function ToolsManager() {
-  const { tools, online, addTool, updateTool, deleteTool, formatCurrency, privacidade } =
-    useAppData();
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [editingId, setEditingId] = useState(null);
-  const [msg, setMsg] = useState('');
+function ToolForm({ initial, saving, onSubmit, onCancel }) {
+  const { privacidade } = useAppData();
+  const [form, setForm] = useState(
+    initial
+      ? {
+          nome: initial.nome ?? '',
+          valorCompra: moneyToDraft(initial.valorCompra),
+          vidaUtilMeses: String(initial.vidaUtilMeses ?? ''),
+        }
+      : EMPTY_FORM
+  );
+  const [error, setError] = useState('');
 
   function setField(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
-    setMsg('');
+    setError('');
   }
 
-  function startEdit(tool) {
-    setEditingId(tool.id);
-    setForm({
-      nome: tool.nome ?? '',
-      valorCompra: moneyToDraft(tool.valorCompra),
-      vidaUtilMeses: String(tool.vidaUtilMeses ?? ''),
-    });
-    setMsg('');
-  }
-
-  function cancelEdit() {
-    setEditingId(null);
-    setForm(EMPTY_FORM);
-    setMsg('');
-  }
-
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
     if (!form.nome.trim()) {
-      setMsg('Informe o nome da ferramenta.');
+      setError('Informe o nome da ferramenta.');
       return;
     }
     const valorCompra = parseBRLtoNumber(form.valorCompra);
     const vidaUtilMeses = Number(form.vidaUtilMeses) || 0;
     if (valorCompra <= 0) {
-      setMsg('Informe o valor de compra.');
+      setError('Informe o valor de compra.');
       return;
     }
     if (vidaUtilMeses <= 0) {
-      setMsg('Informe a vida útil em meses.');
+      setError('Informe a vida útil em meses.');
       return;
     }
+    onSubmit({ nome: form.nome, valorCompra, vidaUtilMeses });
+  }
 
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {error ? <Alert tone="error">{error}</Alert> : null}
+
+      <Input
+        label="Nome da ferramenta *"
+        placeholder="Ex: Parafusadeira de impacto 20V"
+        icon={Wrench}
+        autoFocus
+        value={form.nome}
+        onChange={(event) => setField('nome', event.target.value)}
+      />
+
+      <div className="space-y-2">
+        <Input
+          label="Valor de compra (R$) *"
+          prefix="R$"
+          inputMode="decimal"
+          placeholder={privacidade ? 'R$ ***' : '0,00'}
+          value={privacidade ? '' : form.valorCompra}
+          onChange={(event) => setField('valorCompra', event.target.value)}
+          disabled={privacidade}
+        />
+        <Input
+          label="Vida útil (meses) *"
+          inputMode="numeric"
+          placeholder="Ex: 36"
+          value={form.vidaUtilMeses}
+          onChange={(event) => setField('vidaUtilMeses', event.target.value)}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Button type="button" variant="secondary" onClick={onCancel} disabled={saving}>
+          Cancelar
+        </Button>
+        <Button type="submit" loading={saving}>
+          {initial ? 'Salvar alterações' : 'Adicionar ferramenta'}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+export default function ToolsManager() {
+  const { tools, online, addTool, updateTool, deleteTool, formatCurrency } = useAppData();
+  const [modal, setModal] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+
+  function openCreate() {
+    setModal({ mode: 'create' });
+  }
+
+  function openEdit(tool) {
+    setModal({ mode: 'edit', tool });
+  }
+
+  async function handleSubmit(data) {
+    setSaving(true);
     try {
-      if (editingId) {
-        await updateTool(editingId, { nome: form.nome, valorCompra, vidaUtilMeses });
+      if (modal?.mode === 'edit') {
+        await updateTool(modal.tool.id, data);
       } else {
-        await addTool({ nome: form.nome, valorCompra, vidaUtilMeses });
+        await addTool(data);
       }
-      setForm(EMPTY_FORM);
-      setEditingId(null);
-      setMsg(
+      setModal(null);
+      setFeedback(
         online
           ? 'Ferramenta salva no Firebase.'
           : 'Ferramenta salva no aparelho — sincroniza ao reconectar.'
       );
     } catch {
-      setMsg('Falha ao salvar a ferramenta. Tente novamente.');
+      setFeedback('Falha ao salvar a ferramenta. Tente novamente.');
+    } finally {
+      setSaving(false);
     }
   }
 
   function confirmDelete(tool) {
     // eslint-disable-next-line no-alert
     if (!window.confirm(`Remover "${tool.nome}"? Essa ação não pode ser desfeita.`)) return;
-    deleteTool(tool.id).catch(() => setMsg('Falha ao remover a ferramenta.'));
+    deleteTool(tool.id).catch(() => setFeedback('Falha ao remover a ferramenta.'));
   }
 
   const totalDepreciacao = computeCustoMensalFerramentas(tools);
@@ -97,90 +152,42 @@ export default function ToolsManager() {
             Gerenciar ferramentas
           </h3>
         </div>
-        <span className="rounded bg-surface-container-high px-2.5 py-1 text-xs font-semibold text-primary-container">
-          {tools.length} {tools.length === 1 ? 'item' : 'itens'}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded bg-surface-container-high px-2.5 py-1 text-xs font-semibold text-primary-container">
+            {tools.length} {tools.length === 1 ? 'item' : 'itens'}
+          </span>
+          <button
+            type="button"
+            onClick={openCreate}
+            className="flex h-11 items-center gap-1.5 rounded-lg bg-primary-container px-3 text-[15px] font-bold text-on-primary-container shadow-yellow-bevel transition-all active:translate-y-0.5 active:shadow-none"
+          >
+            <Plus size={20} strokeWidth={2.5} />
+            Adicionar
+          </button>
+        </div>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-3 rounded border border-zinc-border bg-surface-container p-3"
-      >
-        <Input
-          label="Nome da ferramenta"
-          placeholder="Ex: Parafusadeira de impacto 20V"
-          icon={Wrench}
-          value={form.nome}
-          onChange={(event) => setField('nome', event.target.value)}
-        />
-
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <Input
-              label="Valor de compra (R$)"
-              prefix="R$"
-              inputMode="decimal"
-              placeholder={privacidade ? 'R$ ***' : '0,00'}
-              value={privacidade ? '' : form.valorCompra}
-              onChange={(event) => setField('valorCompra', event.target.value)}
-              disabled={privacidade}
-            />
-          </div>
-          <div className="w-24 shrink-0">
-            <Input
-              label="Vida útil"
-              inputMode="numeric"
-              placeholder="Meses"
-              value={form.vidaUtilMeses}
-              onChange={(event) => setField('vidaUtilMeses', event.target.value)}
-            />
-          </div>
-          {editingId ? (
-            <div className="flex shrink-0 gap-2 pb-0.5">
-              <Button
-                type="submit"
-                variant="primary"
-                size="md"
-                className="h-12 w-14 px-0"
-                aria-label="Salvar ferramenta"
-              >
-                <Check size={22} />
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="md"
-                className="h-12 w-14 px-0"
-                aria-label="Cancelar edição"
-                onClick={cancelEdit}
-              >
-                <X size={22} />
-              </Button>
-            </div>
+      {feedback ? (
+        <p
+          className={`flex items-center gap-2 text-[15px] font-semibold ${
+            feedback.startsWith('Falha') ? 'text-error' : 'text-primary-container'
+          }`}
+        >
+          {feedback.startsWith('Falha') ? null : feedback.includes('aparelho') ? (
+            <CloudOff size={18} className="shrink-0" />
           ) : (
-            <Button
-              type="submit"
-              variant="primary"
-              size="md"
-              className="h-12 w-14 shrink-0 px-0 pb-0.5"
-              aria-label="Adicionar ferramenta"
-            >
-              <Plus size={24} strokeWidth={2.5} />
-            </Button>
+            <CheckCircle2 size={18} className="shrink-0" />
           )}
-        </div>
-
-        {msg ? (
-          <p className="text-[15px] font-semibold text-primary-container">{msg}</p>
-        ) : null}
-      </form>
+          {feedback}
+        </p>
+      ) : null}
 
       <div className="flex flex-col gap-2">
         {tools.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 rounded border border-dashed border-zinc-border bg-surface-container/40 px-6 py-8 text-center">
             <Wrench size={26} className="text-on-surface-variant" />
             <p className="text-[15px] font-normal text-on-surface-variant">
-              Nenhuma ferramenta cadastrada ainda. Adicione a primeira acima.
+              Nenhuma ferramenta cadastrada ainda. Toque em Adicionar para começar.
             </p>
           </div>
         ) : (
@@ -227,7 +234,7 @@ export default function ToolsManager() {
                     <button
                       type="button"
                       aria-label={`Editar ${tool.nome}`}
-                      onClick={() => startEdit(tool)}
+                      onClick={() => openEdit(tool)}
                       className="flex h-10 w-10 items-center justify-center rounded bg-surface-container-high text-on-surface-variant transition-colors hover:text-on-surface"
                     >
                       <Pencil size={18} />
@@ -293,6 +300,21 @@ export default function ToolsManager() {
           </span>
         </div>
       ) : null}
+
+      <Modal
+        open={modal != null}
+        onClose={() => {
+          if (!saving) setModal(null);
+        }}
+        title={modal?.mode === 'edit' ? 'Editar ferramenta' : 'Adicionar ferramenta'}
+      >
+        <ToolForm
+          initial={modal?.mode === 'edit' ? modal.tool : null}
+          saving={saving}
+          onSubmit={handleSubmit}
+          onCancel={() => setModal(null)}
+        />
+      </Modal>
     </section>
   );
 }

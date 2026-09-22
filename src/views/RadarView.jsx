@@ -67,11 +67,6 @@ export default function RadarView() {
 
   return (
     <section className="flex flex-col gap-4 pb-8">
-      <div className="flex items-center gap-2">
-        <Radar size={20} className="text-primary-container" />
-        <h2 className="text-base font-semibold text-on-surface">Radar de oportunidades</h2>
-      </div>
-
       <p className="text-[15px] text-on-surface-variant">
         Vagas de montagem publicadas pelo administrador, em tempo real. Toque no botão para
         manifestar interesse direto no WhatsApp.

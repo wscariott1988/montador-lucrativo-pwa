@@ -13,6 +13,7 @@ export default function TransactionsList({ despesas, receitas, onDeleteReceita, 
       id: item.id,
       kind: 'receita',
       descricao: item.descricao || 'Entrada avulsa',
+      categoria: item.categoria || '',
       valor: item.valor,
       data: item.data,
     })),
@@ -20,6 +21,7 @@ export default function TransactionsList({ despesas, receitas, onDeleteReceita, 
       id: item.id,
       kind: 'despesa',
       descricao: item.descricao || 'Saída',
+      categoria: item.categoria || '',
       valor: item.valor,
       data: item.data,
     })),
@@ -47,7 +49,14 @@ export default function TransactionsList({ despesas, receitas, onDeleteReceita, 
           )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-[15px] font-semibold text-on-surface">{item.descricao}</p>
-            <p className="text-[15px] text-on-surface-variant">{shortDate(item.data)}</p>
+            <div className="flex items-center gap-2">
+              {item.categoria ? (
+                <span className="rounded bg-surface-container-high px-1.5 py-0.5 text-xs font-semibold text-on-surface-variant">
+                  {item.categoria}
+                </span>
+              ) : null}
+              <p className="text-[15px] text-on-surface-variant">{shortDate(item.data)}</p>
+            </div>
           </div>
           <p
             className={`shrink-0 font-mono text-[15px] font-extrabold ${

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History, FilePlus2, RefreshCw, Loader2 } from 'lucide-react';
+import { FilePlus2, RefreshCw, Loader2, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAppData } from '../context/AppDataContext';
 import useHistory from '../hooks/useHistory';
@@ -29,7 +29,7 @@ export default function HistoryView() {
     try {
       const ok = await toggleStatus(orcamento.id);
       if (ok) {
-        const novo = orcamento.status === 'pago' ? 'Pendente' : 'Pago';
+        const novo = orcamento.status === 'pago' ? 'Pendente' : 'Recebido';
         setToast({
           tone: 'success',
           message: `Orçamento marcado como ${novo}.`,
@@ -60,11 +60,6 @@ export default function HistoryView() {
 
   return (
     <section className="flex flex-col gap-4 pb-8">
-      <div className="flex items-center gap-2">
-        <History size={20} className="text-primary-container" />
-        <h2 className="text-base font-semibold text-on-surface">Histórico de orçamentos</h2>
-      </div>
-
       {initialLoading ? (
         <HistorySkeleton />
       ) : items.length === 0 ? (

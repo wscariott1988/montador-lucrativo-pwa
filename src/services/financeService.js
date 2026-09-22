@@ -70,18 +70,20 @@ export function streamOrcamentosPagos(uid, { inicio, fim }, onNext, onError) {
   );
 }
 
-export async function addDespesa(uid, { descricao, valor, data }) {
+export async function addDespesa(uid, { descricao, valor, data, categoria }) {
   await addDoc(ref(uid, 'despesas'), {
     descricao: String(descricao ?? '').trim(),
+    categoria: String(categoria ?? '').trim(),
     valor: Number(valor) || 0,
     data: data || toISODate(),
     criadoEm: serverTimestamp(),
   });
 }
 
-export async function addReceitaAvulsa(uid, { descricao, valor, data }) {
+export async function addReceitaAvulsa(uid, { descricao, valor, data, categoria }) {
   await addDoc(ref(uid, 'receitas_avulsas'), {
     descricao: String(descricao ?? '').trim(),
+    categoria: String(categoria ?? '').trim(),
     valor: Number(valor) || 0,
     data: data || toISODate(),
     criadoEm: serverTimestamp(),

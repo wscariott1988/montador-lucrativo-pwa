@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FilePlus2, RotateCcw, FileText, ClipboardCopy, History } from 'lucide-react';
+import { RotateCcw, FileText, ClipboardCopy, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAppData } from '../context/AppDataContext';
 import { computeValorHora } from '../utils/pricing';
@@ -7,6 +7,8 @@ import { toISODate } from '../utils/formatters';
 import { num, money, gerarNumeroOrcamento, buildBudgetPayload, saveOrcamento, buildWhatsappText } from '../services/budgetService';
 import { incrementarOrcamentos } from '../services/analyticsService';
 import { generateBudgetPdf } from '../services/pdfService';
+import { dadosMinimosNegocioPendentes, montarDadosNegocio } from '../utils/businessData';
+import DadosPendentesModal from '../components/ui/DadosPendentesModal';
 import ServicesEditor from '../components/budget/ServicesEditor';
 import PartsEditor from '../components/budget/PartsEditor';
 import ClientSection from '../components/budget/ClientSection';
@@ -52,6 +54,7 @@ export default function NewBudgetView() {
 
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pdfPendentes, setPdfPendentes] = useState([]);
 
   // Motor de calculo em tempo real
   const resultado = useMemo(() => {
@@ -182,8 +185,13 @@ export default function NewBudgetView() {
 
   function handlePdf() {
     if (acoesTravadas || isSubmitting) return;
+    const pendentes = dadosMinimosNegocioPendentes(profile);
+    if (pendentes.length > 0) {
+      setPdfPendentes(pendentes);
+      return;
+    }
     try {
-      generateBudgetPdf(dados);
+      generateBudgetPdf(dados, montarDadosNegocio(profile));
     } catch {
       setToast({ tone: 'error', message: 'Não foi possível gerar o PDF.' });
     }
@@ -192,10 +200,9 @@ export default function NewBudgetView() {
   return (
     <section className="flex flex-col gap-5 pb-8">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <FilePlus2 size={20} className="text-primary-container" />
-          <h2 className="text-base font-semibold text-on-surface">Novo orçamento</h2>
-        </div>
+        <span className="text-[15px] font-semibold text-on-surface-variant">
+          Preencha os dados e gere a proposta em segundos
+        </span>
         <button
           type="button"
           onClick={resetForm}
@@ -290,11 +297,17 @@ export default function NewBudgetView() {
           {isSubmitting ? 'Salvando...' : (
             <>
               <History size={20} />
-              Salvar no histórico
+              Salvar Orçamento
             </>
           )}
         </button>
       </div>
+
+      <DadosPendentesModal
+        open={pdfPendentes.length > 0}
+        pendentes={pdfPendentes}
+        onClose={() => setPdfPendentes([])}
+      />
 
       <Toast
         message={toast?.message}

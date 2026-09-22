@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Search, Plus, BookOpen, Trash2, Wrench, Clock3, Coins, X } from 'lucide-react';
+import {
+  Search,
+  Plus,
+  BookOpen,
+  Trash2,
+  Wrench,
+  Clock3,
+  Coins,
+  X,
+  ExternalLink,
+} from 'lucide-react';
 import Input from '../ui/Input';
+import Modal from '../ui/Modal';
+import Button from '../ui/Button';
+import Alert from '../ui/Alert';
 import { uid, num, money } from '../../services/budgetService';
 import { SUGGESTED_SERVICES } from '../../data/budgetPresets';
 import { useAppData } from '../../context/AppDataContext';
@@ -32,6 +45,12 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
   const [focused, setFocused] = useState(false);
   const [freq, setFreq] = useState(loadFreq);
   const dropdownRef = useRef(null);
+
+  // Modais: Servico Avulso (nome, quantidade, valor) e Busca de Manual (.pdf)
+  const [avulsoOpen, setAvulsoOpen] = useState(false);
+  const [avulsoName, setAvulsoName] = useState('');
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualNome, setManualNome] = useState('');
 
   // Ordena a lista: "Mais Utilizados" (frequencia) primeiro, depois alfabetica.
   const ordered = useMemo(() => {
@@ -82,6 +101,24 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
     setFocused(false);
   }
 
+  function addServicoAvulso({ nome, quantidade, valor }) {
+    const nomeFinal = String(nome ?? '').trim();
+    if (!nomeFinal) return;
+    registrarUso(nomeFinal);
+    onChangeServicos((lista) => [
+      ...lista,
+      {
+        id: uid(),
+        nome: nomeFinal,
+        quantidade: String(quantidade || '1'),
+        tempoHoras: '0',
+        valorExtra: valor,
+      },
+    ]);
+    setBusca('');
+    setFocused(false);
+  }
+
   function updateItem(id, campo, value) {
     onChangeServicos((lista) =>
       lista.map((item) => (item.id === id ? { ...item, [campo]: value } : item))
@@ -96,6 +133,30 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
     return money(
       (num(item.tempoHoras) * num(valorHoraAplicado) + num(item.valorExtra)) * num(item.quantidade)
     );
+  }
+
+  // Abre o modal de servico avulso (preenchendo o nome quando veio da busca).
+  function openAvulsoModal(nomePrefill = '') {
+    setAvulsoName(termo || nomePrefill);
+    setManualOpen(false);
+    setAvulsoOpen(true);
+  }
+
+  function buscarManual() {
+    const palavras = [
+      'manual',
+      'de',
+      'montagem',
+      ...String(manualNome || '').trim().split(/\s+/),
+      '.pdf',
+    ].filter(Boolean);
+    const query = palavras.join('+');
+    window.open(
+      `https://www.google.com/search?q=${query}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    setManualOpen(false);
   }
 
   const totalServicos = servicos.reduce((acc, item) => acc + itemSubtotal(item), 0);
@@ -134,7 +195,11 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
               <button
                 key={nome}
                 type="button"
-                onClick={() => addServico(nome)}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  setFocused(false);
+                  addServico(nome);
+                }}
                 className="flex min-h-[44px] w-full items-center gap-2 px-4 text-left text-[15px] text-on-surface transition-colors hover:bg-primary-container hover:text-on-primary-container"
               >
                 <Plus size={16} className="shrink-0 text-primary-container" />
@@ -144,7 +209,11 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
             {avulsoSugerido ? (
               <button
                 type="button"
-                onClick={() => addServico(termo)}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  setFocused(false);
+                  openAvulsoModal(termo);
+                }}
                 className="flex min-h-[44px] w-full items-center gap-2 border-t border-zinc-border px-4 text-left text-[15px] font-bold text-primary-container transition-colors hover:bg-primary-container/10"
               >
                 <Plus size={16} className="shrink-0" />
@@ -161,30 +230,19 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
       <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
-          onClick={() => {
-            if (!termo) {
-              onNotify('Digite o nome do serviço avulso ou escolha da lista acima.');
-              return;
-            }
-            addServico(termo);
-          }}
-          disabled={!termo}
-          className="flex h-14 items-center justify-center gap-2 rounded border border-primary-container/70 text-[15px] font-bold text-primary-container transition-colors hover:bg-primary-container/10 disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={() => openAvulsoModal()}
+          className="flex h-14 items-center justify-center gap-2 rounded border border-primary-container/70 text-[15px] font-bold text-primary-container transition-colors hover:bg-primary-container/10"
         >
           <Plus size={20} />
           Avulso
         </button>
         <button
           type="button"
-          onClick={() => {
-            const q = encodeURIComponent(`manual montagem pdf ${busca.trim()}`);
-            window.open(`https://www.google.com/search?q=${q}`, '_blank', 'noopener,noreferrer');
-          }}
-          disabled={!busca.trim()}
-          className="flex h-14 items-center justify-center gap-2 rounded bg-secondary-container/10 text-[15px] font-bold text-secondary transition-colors hover:bg-secondary-container/20 disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={() => setManualOpen(true)}
+          className="flex h-14 items-center justify-center gap-2 rounded bg-secondary-container/10 text-[15px] font-bold text-secondary transition-colors hover:bg-secondary-container/20"
         >
           <BookOpen size={20} />
-          Buscar manual
+          Buscar Manual
         </button>
       </div>
 
@@ -222,7 +280,7 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
                 onChange={(event) => updateItem(item.id, 'tempoHoras', event.target.value)}
               />
               <Input
-                label="Extra (R$)"
+                label="Valor (R$)"
                 inputMode="decimal"
                 icon={Coins}
                 placeholder={privacidade ? 'R$ ***' : '0,00'}
@@ -254,6 +312,152 @@ export default function ServicesEditor({ valorHoraAplicado, servicos, onChangeSe
           </span>
         </div>
       ) : null}
+
+      {/* Modal: Servico Avulso — nome, quantidade e valor; sem campo de tempo */}
+      <ServicoAvulsoModal
+        open={avulsoOpen}
+        initialName={avulsoName}
+        onClose={() => setAvulsoOpen(false)}
+        onConfirm={(dados) => {
+          addServicoAvulso(dados);
+          setAvulsoOpen(false);
+        }}
+      />
+
+      {/* Modal: Buscar Manual de Montagem (.pdf) */}
+      <Modal
+        open={manualOpen}
+        onClose={() => setManualOpen(false)}
+        title="Buscar manual de montagem"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-[15px] text-on-surface-variant">
+            Informe o nome do móvel para localizar o manual em PDF na internet.
+          </p>
+          <Input
+            label="Nome do móvel"
+            placeholder="Ex: guarda-roupa, cama box, rack"
+            icon={ExternalLink}
+            autoFocus
+            value={manualNome}
+            onChange={(event) => setManualNome(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') buscarManual();
+            }}
+          />
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="secondary" onClick={() => setManualOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={buscarManual}
+              disabled={!manualNome.trim()}
+              className="bg-secondary-container/10 text-secondary hover:bg-secondary-container/20"
+            >
+              <BookOpen size={20} />
+              Buscar Manual
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </section>
+  );
+}
+
+function ServicoAvulsoModal({ open, initialName, onClose, onConfirm }) {
+  const { formatCurrency, privacidade } = useAppData();
+  const [nome, setNome] = useState('');
+  const [quantidade, setQuantidade] = useState('1');
+  const [valor, setValor] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      setNome(initialName || '');
+      setQuantidade('1');
+      setValor('');
+      setError('');
+    }
+  }, [open, initialName]);
+
+  function handleConfirm() {
+    if (!nome.trim()) {
+      setError('Informe o nome do serviço.');
+      return;
+    }
+    const numeroValor = num(valor);
+    if (numeroValor <= 0) {
+      setError('Informe o valor do serviço (R$).');
+      return;
+    }
+    const qtd = Math.max(1, num(quantidade) || 1);
+    onConfirm({ nome: nome.trim(), quantidade: String(qtd), valor: String(valor) });
+  }
+
+  const totalPreview = money(num(valor) * Math.max(1, num(quantidade) || 1));
+
+  return (
+    <Modal open={open} onClose={onClose} title="Serviço avulso">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleConfirm();
+        }}
+        className="flex flex-col gap-4"
+      >
+        {error ? <Alert tone="error">{error}</Alert> : null}
+
+        <Input
+          label="Nome do Serviço *"
+          placeholder="Ex: Montagem de poltrona"
+          icon={Wrench}
+          autoFocus
+          value={nome}
+          onChange={(event) => {
+            setNome(event.target.value);
+            setError('');
+          }}
+        />
+
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            label="Quantidade"
+            inputMode="numeric"
+            value={quantidade}
+            onChange={(event) =>
+              setQuantidade(event.target.value.replace(/[^\d]/g, '') || '1')
+            }
+          />
+          <Input
+            label="Valor (R$) *"
+            prefix="R$"
+            inputMode="decimal"
+            placeholder={privacidade ? 'R$ ***' : '0,00'}
+            value={privacidade ? '' : valor}
+            onChange={(event) => {
+              setValor(event.target.value);
+              setError('');
+            }}
+            disabled={privacidade}
+          />
+        </div>
+
+        <p className="text-[13px] font-semibold text-on-surface-variant">
+          Valor total ({num(quantidade) || 1}
+          {num(quantidade) && num(quantidade) > 1 ? ' unidades' : ' unidade'}):{' '}
+          <span className="font-mono font-bold text-primary-container">
+            {formatCurrency(totalPreview)}
+          </span>
+        </p>
+
+        <div className="grid grid-cols-2 gap-2">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit">Adicionar serviço</Button>
+        </div>
+      </form>
+    </Modal>
   );
 }
